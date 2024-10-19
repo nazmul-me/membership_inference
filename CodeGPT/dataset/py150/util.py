@@ -5,7 +5,7 @@ from tokenize import tokenize, untokenize, COMMENT, STRING, NEWLINE, ENCODING, E
 from io import BytesIO
 
 
-lits = json.load(open("/pathto/membership_inference/CodeGPT/dataset/py150/literals.json"))
+lits = json.load(open("/home/mhaque4/Desktop/MIA/membership_inference/CodeGPT/dataset/py150/literals.json"))
 
 def process_string(token, special_chars={" ": "U+0020", ",": "U+002C"}):
     str_quote_options = ["'''", '"""', "'", '"']

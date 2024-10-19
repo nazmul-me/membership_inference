@@ -60,9 +60,9 @@ def load_py150_by_files(num_training, num_validation, base_dir, prefix, output_d
             
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--base_dir", default="/pathto/data/py150_files", type=str, 
+    parser.add_argument("--base_dir", default=base_dir, type=str, 
                         help="The downloaded data path")
-    parser.add_argument("--output_dir", default="/pathto/data/membership_inference", type=str, 
+    parser.add_argument("--output_dir", default=output_dir, type=str, 
                         help="The output directory")
     
     
@@ -83,6 +83,10 @@ def main():
         load_py150_by_files(num_training=args.number_of_train_files, num_validation=args.number_of_valid_files, 
                             base_dir=args.base_dir, prefix="shadow_{}".format(i), output_dir=args.output_dir)
     
-    
+
+# Config data
+base_dir = "/home/mhaque4/Desktop/MIA/membership_inference/py150_files"
+output_dir = "/home/mhaque4/Desktop/MIA/membership_inference/inference"
+# end config          
 if __name__ == "__main__":
     main()
