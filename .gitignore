@@ -1,1 +1,6 @@
 py150_files/
+inference/*
+!inference/dataset.py
+!inference/inference.py
+!inference/inference.sh
+!inference/model.py

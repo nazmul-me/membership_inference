@@ -66,11 +66,11 @@ def main():
                         help="The output directory")
     
     
-    parser.add_argument("-nshdow", "--number_of_shadow_model", default=10, type=int,
+    parser.add_argument("-nshdow", "--number_of_shadow_model", default=nshdow, type=int,
                         help="The number of shadow model")
-    parser.add_argument("-ntrain", "--number_of_train_files", default=24000, type=int,
+    parser.add_argument("-ntrain", "--number_of_train_files", default=ntrain, type=int,
                         help="number of files for training a completion model, the number of non-member files is the same")
-    parser.add_argument("-neval", "--number_of_valid_files", default=2000, type=int,
+    parser.add_argument("-neval", "--number_of_valid_files", default=neval, type=int,
                         help="number of validation files")
     args = parser.parse_args()
     
@@ -87,6 +87,9 @@ def main():
 # Config data
 base_dir = "/home/mhaque4/Desktop/MIA/membership_inference/py150_files"
 output_dir = "/home/mhaque4/Desktop/MIA/membership_inference/inference"
+nshdow = 10
+ntrain = 24000
+neval = 2000
 # end config          
 if __name__ == "__main__":
     main()
