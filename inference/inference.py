@@ -12,6 +12,7 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, roc_a
 
 from dataset import AuditDataset
 from model import AuditModel
+from collections import Counter
 
 logger = logging.getLogger(__name__)
 
@@ -177,44 +178,44 @@ def evaluate(args, eval_dataset, model):
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--data_dir", default="", type=str, 
+    parser.add_argument("--data_dir", default=data_dir, type=str, 
                         help="The downloaded data path")
-    parser.add_argument("--output_dir", default="", type=str, 
+    parser.add_argument("--output_dir", default=output_dir, type=str, 
                         help="The output directory")
-    parser.add_argument("--bins", default=100, type=int,
+    parser.add_argument("--bins", default=bins, type=int,
                         help="The bins of the rank list's histogram ")
-    parser.add_argument("--hidden_states", default=50, type=int,
+    parser.add_argument("--hidden_states", default=hidden_states, type=int,
                         help="The hidden states of the MLP")
-    parser.add_argument("--batch_size", default=32, type=int)
-    parser.add_argument("--epoch", default=50, type=int)
+    parser.add_argument("--batch_size", default=batch_size, type=int)
+    parser.add_argument("--epoch", default=epoch, type=int)
     parser.add_argument("--no_cuda", action='store_true',
                         help="Avoid using CUDA when available")
     parser.add_argument('--seed', type=int, default=42,
                         help="random seed for initialization")
-    parser.add_argument('--logging_steps', type=int, default=400,
+    parser.add_argument('--logging_steps', type=int, default=logging_steps,
                     help="Log every X updates steps.")
     
-    parser.add_argument("--do_train", default=True, action='store_true',
+    parser.add_argument("--do_train", default=do_train, action='store_true',
                         help="Whether to run training.")
-    parser.add_argument("--do_eval", default=True, action='store_true',
+    parser.add_argument("--do_eval", default=do_eval, action='store_true',
                         help="Whether to run eval on the dev set.")
         
-    parser.add_argument("-nshdow", "--number_of_shadow_model", default=10, type=int,
+    parser.add_argument("-nshdow", "--number_of_shadow_model", default=number_of_shadow_model, type=int,
                         help="The number of shadow model")
-    parser.add_argument("--shadow_model_type", default="lstm", type=str,
+    parser.add_argument("--shadow_model_type", default=shadow_model_type, type=str,
                         help="The architecture of shadow models.", choices=["lstm", "code-gpt"])
-    parser.add_argument("--target_model_type", default="lstm", type=str,
+    parser.add_argument("--target_model_type", default=targer_model_type, type=str,
                         help="The architecture of target model.", choices=["lstm", "code-gpt"])
-    parser.add_argument("--use_probability", default=False, action="store_true",
+    parser.add_argument("--use_probability", default=use_probabolity, action="store_true",
                         help="Whether use probability to audit or not")
     # parser.add_argument("--cross_model", default=True, action="store_true",
     #                     help="whether the target model type is the same as the shadow model type")
     
-    parser.add_argument("--output_size", default=100002, type=int,
+    parser.add_argument("--output_size", default=output_size, type=int,
                         help="The output size of the model") # code-gpt's vocabulary's size is 50234, lstm's vocabulary's size is 100002
     
-    parser.add_argument("--number_of_queries", default=0, type=int)
-    parser.add_argument("--sampling_strategy", default="frequency", choices=["random", "frequency"])
+    parser.add_argument("--number_of_queries", default=number_of_queries, type=int)
+    parser.add_argument("--sampling_strategy", default=sampling_strategy, choices=["random", "frequency"])
     
     args = parser.parse_args()
     logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -  %(filename)s - %(funcName)s - %(lineno)s - %(message)s',
@@ -279,9 +280,17 @@ def main():
                 data = torch.load(os.path.join(data_dir, f"{label}_ranks.pth"))
 
                 # load the word frequency
-                with open(os.path.join(args.data_dir, f"target/{args.target_model_type}/{label}_word_frequency.txt")) as f:
-                    word_frequency = json.loads(f.read().strip())
+                # with open(os.path.join(args.data_dir, f"target/{args.target_model_type}/{label}_word_frequency.txt")) as f:
+                #     word_frequency = json.loads(f.read().strip())
                 
+                #Alternative code for previous file
+                all_gt_values = [value for item in data for value in item['gt']]
+                frequency_count = Counter(all_gt_values)
+                del all_gt_values
+                word_frequency = sorted(frequency_count.items(), key=lambda x: x[1])
+                del frequency_count
+                #end code
+
                 token_list = dict() # key is the token's index, value is the token's frequency rank
                 for rank, token in enumerate(word_frequency):
                     token_list[token[0]] = rank
@@ -301,6 +310,30 @@ def main():
             logger.info(f"accuracy: {accuracy}, auc: {auc}, precision: {precision}, recall: {recall}")
             logger.info(f"accuracy: {round(accuracy, 4)*100}%, auc: {round(auc, 4)*100}%, precision: {round(precision, 4)*100}%, recall: {round(recall, 4)*100}%")      
 
+
+# Config data
+model = 'shadow_0' # change it to shadow_(0-9) for 10 shadow models and target
+dir_prefix = "/home/mhaque4/Desktop/MIA"
+
+data_dir = dir_prefix + "/membership_inference/inference"
+langs = "python"
+output_dir = dir_prefix + "/membership_inference/inference/infResult"
+
+bins = 100
+hidden_states = 50
+batch_size = 32
+epoch = 50
+logging_steps = 400
+do_train = True
+do_eval = True
+number_of_shadow_model = 10
+shadow_model_type = "code-gpt" #"code-gpt" "lstm"
+targer_model_type = "code-gpt" #"code-gpt" "lstm"
+use_probabolity = False
+output_size = 50234 # code-gpt's vocabulary's size is 50234, lstm's vocabulary's size is 100002
+number_of_queries = 0
+sampling_strategy = "frequency" # "frequency" "random"
+# end config  
         
 if __name__ == "__main__":
     main()

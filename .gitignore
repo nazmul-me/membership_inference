@@ -4,3 +4,5 @@ inference/*
 !inference/inference.py
 !inference/inference.sh
 !inference/model.py
+*.log
+*.pyc

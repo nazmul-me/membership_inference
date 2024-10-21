@@ -184,34 +184,34 @@ def load_rank(args, model, tokenizer, member="train", non_member="test"):
 def main():
     parser = argparse.ArgumentParser()
     ## Required parameters
-    parser.add_argument("--data_dir", default=None, type=str, required=True,
+    parser.add_argument("--data_dir", default=data_dir, type=str,
                         help="The input data path.")
-    parser.add_argument("--langs", default=None, type=str, required=True,
+    parser.add_argument("--langs", default=langs, type=str,
                         help="Languages to train, if all, train all languages in data_dir")
-    parser.add_argument("--output_dir", default=None, type=str, required=True,
+    parser.add_argument("--output_dir", default=output_dir, type=str,
                         help="The output directory where the model predictions and checkpoints will be written.")
 
     ## Other parameters
-    parser.add_argument("--model_type", default="gpt2", type=str,
+    parser.add_argument("--model_type", default=model_type, type=str,
                         help="The model architecture to be fine-tuned.")
-    parser.add_argument("--pretrain_dir", default="", type=str,
+    parser.add_argument("--pretrain_dir", default=pretrain_dir, type=str,
                         help="The output directory where the model predictions and checkpoints will be written.")
-    parser.add_argument("--lit_file", type=str,
+    parser.add_argument("--lit_file", type=str, default=lit_file,
                         help="literals json file")
 
 
-    parser.add_argument("--block_size", default=1024, type=int,
+    parser.add_argument("--block_size", default=block_size, type=int,
                         help="Optional input sequence length after tokenization."
                              "The training dataset will be truncated in block of this size for training."
                              "Default to the model max input length for single sentence inputs (take into account special tokens).")
-    parser.add_argument("--eval_batch_size", default=12, type=int,
+    parser.add_argument("--eval_batch_size", default=eval_batch_size, type=int,
                         help="Batch size per GPU/CPU for evaluation.")
     parser.add_argument("--do_lower_case", action='store_true',
                         help="Set this flag if you are using an uncased model.")
     
-    parser.add_argument('--logging_steps', type=int, default=1000,
+    parser.add_argument('--logging_steps', type=int, default=logging_steps,
                         help="Log every X evaluation steps.")
-    parser.add_argument('--overwrite_output_dir', action='store_true',
+    parser.add_argument('--overwrite_output_dir', action='store_true', default=overwrite_output_dir,
                         help="Overwrite the content of the output directory")
     parser.add_argument('--overwrite_cache', action='store_true',
                         help="Overwrite the cached training and evaluation sets")
@@ -220,7 +220,7 @@ def main():
     parser.add_argument('--seed', type=int, default=42,
                         help="random seed for initialization")
     
-    parser.add_argument('--log_file', type=str, default='')
+    parser.add_argument('--log_file', type=str, default=log_file)
 
     args = parser.parse_args()
     args.device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
@@ -278,6 +278,23 @@ def main():
     load_rank(args, model, tokenizer, member="train", non_member="test")
     
 
+# Config data
+model = 'shadow_0' # change it to shadow_(0-9) for 10 shadow models and target
+dir_prefix = "/home/mhaque4/Desktop/MIA"
+
+data_dir = dir_prefix + "/membership_inference/inference/" + model + "/code-gpt"
+langs = "python"
+output_dir = dir_prefix + "/membership_inference/inference/" + model + "/code-gpt/ranks"
+
+model_type = "gpt2"
+pretrain_dir = dir_prefix + "/membership_inference/inference/" + model + "/code-gpt/model/checkpoint-last"
+lit_file =  dir_prefix + "/membership_inference/CodeGPT/dataset/py150/literals.json"
+block_size = 1024
+eval_batch_size = 16
+logging_steps = 500
+overwrite_output_dir = True
+log_file = model + "_model_rank.log"
+# end config  
 
 if __name__ == "__main__":
     main()

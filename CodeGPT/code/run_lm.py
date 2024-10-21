@@ -487,23 +487,23 @@ def main():
     parser = argparse.ArgumentParser()
 
     ## Required parameters
-    parser.add_argument("--data_dir", default=None, type=str, required=True,
+    parser.add_argument("--data_dir", default=data_dir, type=str,
                         help="The input data path.")
-    parser.add_argument("--langs", default=None, type=str, required=True,
+    parser.add_argument("--langs", default=langs, type=str,
                         help="Languages to train, if all, train all languages in data_dir")
-    parser.add_argument("--output_dir", default=None, type=str, required=True,
+    parser.add_argument("--output_dir", default=output_dir, type=str,
                         help="The output directory where the model predictions and checkpoints will be written.")
 
     ## Other parameters
-    parser.add_argument("--model_type", default="gpt2", type=str,
+    parser.add_argument("--model_type", default=model_type, type=str,
                         help="The model architecture to be fine-tuned.")
-    parser.add_argument("--pretrain_dir", default="", type=str,
+    parser.add_argument("--pretrain_dir", default=pretrain_dir, type=str,
                         help="The output directory where the model predictions and checkpoints will be written.")
     parser.add_argument("--config_dir", type=str,
                         help="config name. Required when training from scratch")
     parser.add_argument("--tokenizer_dir", type=str,
                         help="Pre-trained tokenizer dir. Required when training from scratch")
-    parser.add_argument("--lit_file", type=str,
+    parser.add_argument("--lit_file", type=str, default=lit_file,
                         help="literals json file")
     parser.add_argument("--load_name", type=str, default="pretrained", 
                         help="Load pretrained model name")
@@ -515,11 +515,11 @@ def main():
 
     parser.add_argument("--cache_dir", default="", type=str,
                         help="Optional directory to store the pre-trained models downloaded from s3 (instread of the default one)")
-    parser.add_argument("--block_size", default=1024, type=int,
+    parser.add_argument("--block_size", default=block_size, type=int,
                         help="Optional input sequence length after tokenization."
                              "The training dataset will be truncated in block of this size for training."
                              "Default to the model max input length for single sentence inputs (take into account special tokens).")
-    parser.add_argument("--do_train", action='store_true',
+    parser.add_argument("--do_train", action='store_true', default=do_train,
                         help="Whether to run training.")
     parser.add_argument("--do_eval", action='store_true',
                         help="Whether to run eval on the dev set.")
@@ -528,30 +528,30 @@ def main():
     parser.add_argument("--do_lower_case", action='store_true',
                         help="Set this flag if you are using an uncased model.")
 
-    parser.add_argument("--per_gpu_train_batch_size", default=4, type=int,
+    parser.add_argument("--per_gpu_train_batch_size", default=per_gpu_train_batch_size, type=int,
                         help="Batch size per GPU/CPU for training.")
-    parser.add_argument("--per_gpu_eval_batch_size", default=12, type=int,
+    parser.add_argument("--per_gpu_eval_batch_size", default=per_gpu_eval_batch_size, type=int,
                         help="Batch size per GPU/CPU for evaluation.")
-    parser.add_argument('--gradient_accumulation_steps', type=int, default=1,
+    parser.add_argument('--gradient_accumulation_steps', type=int, default=gradient_accumulation_steps,
                         help="Number of updates steps to accumulate before performing a backward/update pass.")
-    parser.add_argument("--learning_rate", default=5e-5, type=float,
+    parser.add_argument("--learning_rate", default=learning_rate, type=float,
                         help="The initial learning rate for Adam.")
-    parser.add_argument("--weight_decay", default=0.0, type=float,
+    parser.add_argument("--weight_decay", default=weight_decay, type=float,
                         help="Weight deay if we apply some.")
     parser.add_argument("--adam_epsilon", default=1e-8, type=float,
                         help="Epsilon for Adam optimizer.")
     parser.add_argument("--max_grad_norm", default=1.0, type=float,
                         help="Max gradient norm.")
-    parser.add_argument("--num_train_epochs", default=1.0, type=float,
+    parser.add_argument("--num_train_epochs", default=num_train_epochs, type=float,
                         help="Total number of training epochs to perform.")
     parser.add_argument("--max_steps", default=-1, type=int,
                         help="If > 0: set total number of training steps to perform. Override num_train_epochs.")
     parser.add_argument("--warmup_steps", default=0, type=int,
                         help="Linear warmup over warmup_steps.")
 
-    parser.add_argument('--logging_steps', type=int, default=1000,
+    parser.add_argument('--logging_steps', type=int, default=logging_steps,
                         help="Log every X updates steps.")
-    parser.add_argument('--save_steps', type=int, default=5000,
+    parser.add_argument('--save_steps', type=int, default=save_steps,
                         help="Save checkpoint every X updates steps.")
     parser.add_argument('--save_total_limit', type=int, default=None,
                         help='Limit the total amount of checkpoints, delete the older checkpoints in the output_dir, does not delete by default')
@@ -559,13 +559,13 @@ def main():
                         help="Evaluate all checkpoints starting with the same prefix as model_name_or_path ending and ending with step number")
     parser.add_argument("--no_cuda", action='store_true',
                         help="Avoid using CUDA when available")
-    parser.add_argument('--overwrite_output_dir', action='store_true',
+    parser.add_argument('--overwrite_output_dir', action='store_true', default=overwrite_output_dir,
                         help="Overwrite the content of the output directory")
     parser.add_argument('--overwrite_cache', action='store_true',
                         help="Overwrite the cached training and evaluation sets")
     parser.add_argument('--seed', type=int, default=42,
                         help="random seed for initialization")
-    parser.add_argument('--not_pretrain', action='store_true',
+    parser.add_argument('--not_pretrain', action='store_true', default=not_pretrain,
                         help="use different dataset")
 
     parser.add_argument('--fp16', action='store_true',
@@ -582,7 +582,7 @@ def main():
     parser.add_argument('--server_ip', type=str, default='', help="For distant debugging.")
     parser.add_argument('--server_port', type=str, default='', help="For distant debugging.")
 
-    parser.add_argument('--log_file', type=str, default='')
+    parser.add_argument('--log_file', type=str, default=log_file)
     parser.add_argument('--tensorboard_dir', type=str)  
     
     pool = None
@@ -711,6 +711,31 @@ def main():
         test_total, test_cr = eval_acc(args, model, tokenizer, 'train')
         logger.info(f"Test total tokens: {test_total}, accuracy: {test_cr/test_total}")
 
+# Config data
+model = 'target' # change it to shadow_(0-9) for 10 shadow models and target
+dir_prefix = "/home/mhaque4/Desktop/MIA"
 
+data_dir = dir_prefix + "/membership_inference/inference/" + model + "/code-gpt"
+langs = "python"
+output_dir = dir_prefix + "/membership_inference/inference/" + model + "/code-gpt/model"
+
+model_type = "gpt2"
+pretrain_dir = "microsoft/CodeGPT-small-py"
+lit_file =  dir_prefix + "/membership_inference/CodeGPT/dataset/py150/literals.json"
+block_size = 1024
+do_train = True
+per_gpu_train_batch_size = 4
+per_gpu_eval_batch_size = 8
+gradient_accumulation_steps = 4
+learning_rate = 8e-5
+weight_decay = 0.01
+num_train_epochs = 5
+logging_steps = 500
+save_steps = 3000
+overwrite_output_dir = True
+not_pretrain = True
+log_file = model + "_model_train.log"
+
+# end config  
 if __name__ == "__main__":
     main()
