@@ -178,7 +178,7 @@ def evaluate(args, eval_dataset, model):
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--data_dir", default=data_dir, type=str, 
+    parser.add_argument("--data_dir", default=data_dirs, type=str, 
                         help="The downloaded data path")
     parser.add_argument("--output_dir", default=output_dir, type=str, 
                         help="The output directory")
@@ -312,21 +312,20 @@ def main():
 
 
 # Config data
-model = 'shadow_0' # change it to shadow_(0-9) for 10 shadow models and target
 dir_prefix = "/home/mhaque4/Desktop/MIA"
 
-data_dir = dir_prefix + "/membership_inference/inference"
+data_dirs = dir_prefix + "/membership_inference/inference"
 langs = "python"
 output_dir = dir_prefix + "/membership_inference/inference/infResult"
 
 bins = 100
 hidden_states = 50
 batch_size = 32
-epoch = 50
+epoch = 5
 logging_steps = 400
 do_train = True
 do_eval = True
-number_of_shadow_model = 10
+number_of_shadow_model = 6
 shadow_model_type = "code-gpt" #"code-gpt" "lstm"
 targer_model_type = "code-gpt" #"code-gpt" "lstm"
 use_probabolity = False

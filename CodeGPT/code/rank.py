@@ -279,7 +279,7 @@ def main():
     
 
 # Config data
-model = 'shadow_0' # change it to shadow_(0-9) for 10 shadow models and target
+model = 'shadow_9' #'shadow_4' # change it to shadow_(0-9) for 10 shadow models and target
 dir_prefix = "/home/mhaque4/Desktop/MIA"
 
 data_dir = dir_prefix + "/membership_inference/inference/" + model + "/code-gpt"
